@@ -62,6 +62,42 @@ char *lsh_read_line(void){
     #endif
 }
 
+#define LSH_TOK_BUFSIZE 64 // max number of tokens in a line
+#define LSH_TOK_DELIM " \t\r\n\a" // delimiters for strtok
+
+char **lsh_split_line(char *line){
+    int bufsize = LSH_TOK_BUFSIZE, position = 0;
+    char **tokens = malloc(bufsize * sizeof(char*)); // array of strings
+    char *token;
+    char **token_backup;
+
+    if (!tokens){
+        fprintf(stderr, "lsh: allocation error\n");
+        exit(EXIT_FAILURE);
+    }
+
+    token = strtok(line, LSH_TOK_DELIM); // split line into tokens
+    while (token != NULL){
+        tokens[position] = token;
+        position++;
+
+        // if we have exceeded the buffer, reallocate
+        if (position >= bufsize){
+            bufsize += LSH_TOK_BUFSIZE;
+            token_backup = tokens;  // save the old tokens
+            tokens = realloc(tokens, bufsize * sizeof(char*));
+            if (!tokens){
+                free(token_backup); // free the old tokens
+                fprintf(stderr, "lsh: allocation error\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+        token = strtok(NULL, LSH_TOK_DELIM); // continue splitting line into tokens NULL means continue from last position
+    }
+    tokens[position] = NULL; // set the last token to NULL
+    return tokens;
+}
+
 void lsh_loop(void)
 {
     char *line;
