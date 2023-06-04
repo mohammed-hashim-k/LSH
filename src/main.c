@@ -6,6 +6,26 @@
 #include <string.h>
 
 
+int lsh_launch(char **args){
+    pid_t pid, wpid; // process id
+    int status;
+
+    pid = fork(); // create a child process
+    
+}
+
+int lsh_execute(char **args){
+    int i;
+    if (args[0] == NULL){
+        // an empty command was entered
+        return 1;
+    }
+    //
+
+
+    return lsh_launch(args);
+}
+
 char *lsh_read_line(void){
     #ifdef LSH_USE_STD_GETLINE
         char *line = NULL;
